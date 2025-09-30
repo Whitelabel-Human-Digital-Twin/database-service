@@ -1,4 +1,5 @@
-package io.github.whdt.db
+package io.github.whdt.db.entità
+
 
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
