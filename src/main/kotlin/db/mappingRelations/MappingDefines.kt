@@ -1,6 +1,6 @@
-package db.mappingEntities
+package io.github.whdt.db.mappingRelations
 
-import io.github.whdt.db.entities.HumanDigitalTwin
+import io.github.whdt.db.relations.Defines
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
@@ -9,19 +9,22 @@ import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
 import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
 
-object HumanDigitalTwinTable : IntIdTable("humandigitaltwin") {
-    val name = varchar("name", 50)
+object DefinesTable : IntIdTable("defines") {
+    val property_id = integer( "property_id")
+    val value_id = integer( "value_id")
 }
 
-class HumanDigitalTwinDAO(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<HumanDigitalTwinDAO>(HumanDigitalTwinTable)
+class DefinesDAO(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<DefinesDAO>(DefinesTable)
 
-    var name by HumanDigitalTwinTable.name
+    var property_id by DefinesTable.property_id
+    val value_id by DefinesTable.value_id
 }
 
 suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
-fun daoToModel(dao: HumanDigitalTwinDAO) = HumanDigitalTwin(
-    dao.name
+fun daoToModel(dao: DefinesDAO) = Defines(
+    dao.property_id,
+    dao.value_id
 )

@@ -1,6 +1,5 @@
 package db.mappingEntities
 
-
 import io.github.whdt.db.entities.Time
 import org.jetbrains.exposed.v1.datetime.*
 import org.jetbrains.exposed.v1.javatime.*

@@ -9,7 +9,6 @@ import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
 import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
 
-
 object ValueTable : IntIdTable("value") {
     val name = varchar("name", 100)
     val value = varchar("value", 255)
