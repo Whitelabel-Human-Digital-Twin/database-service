@@ -21,7 +21,7 @@ class AssociatedDAO(id: EntityID<Int>) : IntEntity(id) {
     val interface_id by AssociatedTable.interface_id
 }
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
+suspend fun <T> AssociatedTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: AssociatedDAO) = Associated(

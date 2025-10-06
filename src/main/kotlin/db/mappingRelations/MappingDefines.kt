@@ -21,7 +21,7 @@ class DefinesDAO(id: EntityID<Int>) : IntEntity(id) {
     val value_id by DefinesTable.value_id
 }
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
+suspend fun <T> DefinesTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: DefinesDAO) = Defines(

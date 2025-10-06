@@ -21,7 +21,7 @@ class InteractsDAO(id: EntityID<Int>) : IntEntity(id) {
     val interface_id by InteractsTable.interface_id
 }
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
+suspend fun <T> InteractsTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: InteractsDAO) = Interacts(

@@ -21,7 +21,7 @@ class PropertyDAO(id: EntityID<Int>) : IntEntity(id) {
     var description by PropertyTable.description
 }
 
-suspend fun <T> suspendTransaction(block: suspend Transaction.() -> T): T =
+suspend fun <T> PropertyTransaction(block: suspend Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: PropertyDAO) = Property(

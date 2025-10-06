@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package db.mappingEntities
 
 import io.github.whdt.db.entities.HumanDigitalTwin
@@ -19,7 +21,7 @@ class HumanDigitalTwinDAO(id: EntityID<Int>) : IntEntity(id) {
     var name by HumanDigitalTwinTable.name
 }
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
+suspend fun <T> HumanDigitalTwinTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: HumanDigitalTwinDAO) = HumanDigitalTwin(

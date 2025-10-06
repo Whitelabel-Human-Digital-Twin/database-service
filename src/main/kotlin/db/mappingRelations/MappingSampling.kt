@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.whdt.db.mappingRelations
 
 import io.github.whdt.db.relations.Sampling
@@ -21,7 +23,7 @@ class SamplingDAO(id: EntityID<Int>) : IntEntity(id) {
     val value_id by SamplingTable.value_id
 }
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
+suspend fun <T> SamplingTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: SamplingDAO) = Sampling(

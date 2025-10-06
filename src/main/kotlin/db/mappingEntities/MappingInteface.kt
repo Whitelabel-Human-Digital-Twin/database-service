@@ -28,7 +28,7 @@ class InterfaceDAO(id: EntityID<Int>) : IntEntity(id) {
     var type by InterfaceTable.type
 }
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
+suspend fun <T> InterfaceTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: InterfaceDAO) = Interface(

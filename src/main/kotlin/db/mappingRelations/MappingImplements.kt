@@ -21,7 +21,7 @@ class ImplementsDAO(id: EntityID<Int>) : IntEntity(id) {
     val humandigitaltwin_id by ImplementsTable.humandigitaltwin_id
 }
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
+suspend fun <T> ImplementsTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: ImplementsDAO) = Implements(

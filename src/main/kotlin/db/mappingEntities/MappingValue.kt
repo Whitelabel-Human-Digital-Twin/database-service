@@ -24,7 +24,7 @@ class ValueDAO(id: EntityID<Int>) : IntEntity(id) {
     var type by ValueTable.type
 }
 
-suspend fun <T> suspendTransaction(block: suspend Transaction.() -> T): T =
+suspend fun <T> ValueTransaction(block: suspend Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: ValueDAO) = Value(
