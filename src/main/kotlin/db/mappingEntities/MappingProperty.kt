@@ -1,13 +1,12 @@
 package db.mappingEntities
 
 import io.github.whdt.db.entities.Property
-import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
-import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 
 object PropertyTable : IntIdTable("property") {
     val name = varchar("name", 100)
@@ -22,7 +21,7 @@ class PropertyDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 suspend fun <T> PropertyTransaction(block: suspend Transaction.() -> T): T =
-    newSuspendedTransaction(Dispatchers.IO, statement = block)
+    suspendTransaction(statement = block)
 
 fun daoToModel(dao: PropertyDAO) = Property(
     dao.name,

@@ -1,11 +1,13 @@
 package db.mappingEntities
 
 import io.github.whdt.db.entities.Time
+import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.datetime.*
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
+import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 
 
 object TimeTable : IntIdTable("time") {
@@ -21,6 +23,9 @@ class TimeDAO(id: EntityID<Int>) : IntEntity(id) {
     var dateStart by TimeTable.dateStart
     var dateEnd by TimeTable.dateEnd
 }
+
+suspend fun <T> TimeTransaction(block: suspend Transaction.() -> T): T =
+    suspendTransaction(statement = block)
 
 fun daoToModel(dao: TimeDAO) = Time(
     dao.dateEnter,
