@@ -1,12 +1,12 @@
 package db.mappingEntities
 
+import io.github.whdt.db.TransactionManager
 import io.github.whdt.db.entities.Value
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
-import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 
 object ValueTable : IntIdTable("value") {
     val name = varchar("name", 100)
@@ -24,7 +24,7 @@ class ValueDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 suspend fun <T> ValueTransaction(block: suspend Transaction.() -> T): T =
-    suspendTransaction(statement = block)
+    TransactionManager().execute(block)
 
 fun daoToModel(dao: ValueDAO) = Value(
     dao.name,

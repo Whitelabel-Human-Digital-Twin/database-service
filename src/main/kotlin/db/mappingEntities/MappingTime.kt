@@ -1,5 +1,6 @@
 package db.mappingEntities
 
+import io.github.whdt.db.TransactionManager
 import io.github.whdt.db.entities.Time
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.datetime.*
@@ -7,8 +8,6 @@ import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
-import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
-
 
 object TimeTable : IntIdTable("time") {
     val dateEnter = datetime("dateEnter")
@@ -25,7 +24,7 @@ class TimeDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 suspend fun <T> TimeTransaction(block: suspend Transaction.() -> T): T =
-    suspendTransaction(statement = block)
+    TransactionManager().execute(block)
 
 fun daoToModel(dao: TimeDAO) = Time(
     dao.dateEnter,

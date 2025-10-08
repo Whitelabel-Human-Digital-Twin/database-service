@@ -1,14 +1,12 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.whdt.db.mappingRelations
 
+import io.github.whdt.db.TransactionManager
 import io.github.whdt.db.relations.Sampling
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
-import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 
 object SamplingTable : IntIdTable("associated") {
     val time_id = integer( "time_id")
@@ -19,11 +17,11 @@ class SamplingDAO(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<SamplingDAO>(SamplingTable)
 
     var time_id by SamplingTable.time_id
-    val value_id by SamplingTable.value_id
+    var value_id by SamplingTable.value_id
 }
 
 suspend fun <T> SamplingTransaction(block: Transaction.() -> T): T =
-    suspendTransaction(statement = block)
+    TransactionManager().execute(block)
 
 fun daoToModel(dao: SamplingDAO) = Sampling(
     dao.time_id,

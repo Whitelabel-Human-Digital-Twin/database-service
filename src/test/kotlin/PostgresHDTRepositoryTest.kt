@@ -19,14 +19,14 @@ class PostgresHDTRepositoryTest : FunSpec({
         repository = PostgresHDTRepository()
     }
 
-    test("prima proova data base ") {
-        val newHDT = HumanDigitalTwin(name = "Test HDT")
+    test("prima prova data base ") {
+        val newHDT = HumanDigitalTwin(name = "Test HDT2")
         repository.addHDT(newHDT)
 
         val allHDTs = repository.allHDT()
 
         allHDTs.shouldNotBeEmpty()
-        allHDTs.any { it.name == "Test HDT" } shouldBe true
+        allHDTs.any { it.name == "Test HDT2" } shouldBe true
 
         println("HDTs nel database: ${allHDTs.size}")
         allHDTs.forEach { println("- ${it.name}") }
