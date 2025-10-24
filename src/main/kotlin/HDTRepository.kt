@@ -24,5 +24,4 @@ interface HDTRepository {
     suspend fun addImplements(implements: Implements)
     suspend fun addInteracts(interacts: Interacts)
     suspend fun addSampling(sampling: Sampling)
-
 }
