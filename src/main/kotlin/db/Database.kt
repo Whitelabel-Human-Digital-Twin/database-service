@@ -4,8 +4,9 @@ import io.ktor.server.application.Application
 import org.jetbrains.exposed.v1.jdbc.Database
 
 fun Application.configureDatabases() {
-    Database.connect(
-        url = "jdbc:postgresql://localhost:5432/HumanDigitalTwin",
+    R2dbcDatabase.connect(
+        url = "r2dbc:postgresql://localhost:5432/HumanDigitalTwin",
+        driver = "postgresql",
         user = "postgres",
         password = "Macca03"
     )
