@@ -1,4 +1,4 @@
-package db.mappingEntities
+package io.github.whdt.db.mappingEntities
 
 import io.github.whdt.db.JdbcTransactionManager
 import io.github.whdt.db.entities.Interface

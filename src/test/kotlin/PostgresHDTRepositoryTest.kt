@@ -1,4 +1,4 @@
-import io.github.whdt.PostgresHDTRepository
+import io.github.whdt.db.repository.PostgresHDTRepository
 import io.github.whdt.db.configureDatabases
 import io.github.whdt.db.entities.HumanDigitalTwin
 import io.kotest.core.spec.style.FunSpec
