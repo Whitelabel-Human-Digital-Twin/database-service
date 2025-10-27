@@ -36,6 +36,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:${ktor_version}")
     implementation("org.jetbrains.exposed:exposed-core:1.0.0-rc-1")
     implementation("org.jetbrains.exposed:exposed-jdbc:1.0.0-rc-1")
+    // https://mvnrepository.com/artifact/org.jetbrains.exposed/exposed-r2dbc
+    implementation("org.jetbrains.exposed:exposed-r2dbc:1.0.0-rc-1")
     implementation("org.jetbrains.exposed:exposed-dao:1.0.0-rc-1")
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:1.0.0-rc-1")
     implementation("org.jetbrains.exposed:exposed-java-time:1.0.0-rc-1")
