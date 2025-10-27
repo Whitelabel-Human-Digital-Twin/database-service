@@ -1,6 +1,6 @@
 package io.github.whdt.db.mappingRelations
 
-import io.github.whdt.db.TransactionManager
+import io.github.whdt.db.JdbcTransactionManager
 import io.github.whdt.db.relations.Interacts
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
@@ -21,7 +21,7 @@ class InteractsDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 suspend fun <T> InteractsTransaction(block: Transaction.() -> T): T =
-    TransactionManager().execute(block)
+    JdbcTransactionManager.execute(block)
 
 fun daoToModel(dao: InteractsDAO) = Interacts(
     dao.humandigitaltwin_id,

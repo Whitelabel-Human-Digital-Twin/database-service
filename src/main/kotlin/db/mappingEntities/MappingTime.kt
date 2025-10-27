@@ -1,6 +1,6 @@
 package db.mappingEntities
 
-import io.github.whdt.db.TransactionManager
+import io.github.whdt.db.JdbcTransactionManager
 import io.github.whdt.db.entities.Time
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.datetime.*
@@ -24,7 +24,7 @@ class TimeDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 suspend fun <T> TimeTransaction(block: suspend Transaction.() -> T): T =
-    TransactionManager().execute(block)
+    JdbcTransactionManager.execute(block)
 
 fun daoToModel(dao: TimeDAO) = Time(
     dao.dateEnter,

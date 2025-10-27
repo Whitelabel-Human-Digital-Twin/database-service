@@ -1,6 +1,6 @@
 package db.mappingEntities
 
-import io.github.whdt.db.TransactionManager
+import io.github.whdt.db.JdbcTransactionManager
 import io.github.whdt.db.entities.Value
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
@@ -24,7 +24,7 @@ class ValueDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 suspend fun <T> ValueTransaction(block: suspend Transaction.() -> T): T =
-    TransactionManager().execute(block)
+    JdbcTransactionManager.execute(block)
 
 fun daoToModel(dao: ValueDAO) = Value(
     dao.name,

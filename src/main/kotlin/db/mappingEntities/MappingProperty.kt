@@ -1,6 +1,6 @@
 package db.mappingEntities
 
-import io.github.whdt.db.TransactionManager
+import io.github.whdt.db.JdbcTransactionManager
 import io.github.whdt.db.entities.Property
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
@@ -21,7 +21,7 @@ class PropertyDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 suspend fun <T> PropertyTransaction(block: suspend Transaction.() -> T): T =
-    TransactionManager().execute(block)
+    JdbcTransactionManager.execute(block)
 
 fun daoToModel(dao: PropertyDAO) = Property(
     dao.name,

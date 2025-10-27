@@ -1,6 +1,6 @@
 package db.mappingEntities
 
-import io.github.whdt.db.TransactionManager
+import io.github.whdt.db.JdbcTransactionManager
 import io.github.whdt.db.entities.HumanDigitalTwin
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
@@ -19,7 +19,7 @@ class HumanDigitalTwinDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 suspend fun <T> HumanDigitalTwinTransaction(block: Transaction.() -> T): T =
-    TransactionManager().execute(block)
+    JdbcTransactionManager.execute(block)
 
 fun daoToModel(dao: HumanDigitalTwinDAO) = HumanDigitalTwin(
     dao.name
