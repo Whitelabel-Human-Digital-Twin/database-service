@@ -26,53 +26,53 @@ import io.github.whdt.db.relations.Sampling
 class PostgresHDTRepository : HDTRepository {
 
     override suspend fun allHDT(): List<HumanDigitalTwin> = HumanDigitalTwinTransaction {
-        HumanDigitalTwinDAO.Companion.all().map(::daoToModel)
+        HumanDigitalTwinDAO.all().map(::daoToModel)
     }
 
     override suspend fun allInterface(): List<Interface> = InterfaceTransaction {
-        InterfaceDAO.Companion.all().map(::daoToModel)
+        InterfaceDAO.all().map(::daoToModel)
     }
 
     override suspend fun allProperty(): List<Property> = PropertyTransaction {
-        PropertyDAO.Companion.all().map(::daoToModel)
+        PropertyDAO.all().map(::daoToModel)
     }
 
     override suspend fun allTime(): List<Time> = TimeTransaction {
-        TimeDAO.Companion.all().map(::daoToModel)
+        TimeDAO.all().map(::daoToModel)
     }
 
     override suspend fun allValue(): List<Value> = ValueTransaction {
-        ValueDAO.Companion.all().map(::daoToModel)
+        ValueDAO.all().map(::daoToModel)
     }
 
     override suspend fun allAssociated(): List<Associated> = AssociatedTransaction {
-        AssociatedDAO.Companion.all().map(::daoToModel)
+        AssociatedDAO.all().map(::daoToModel)
     }
 
     override suspend fun allDefines(): List<Defines> = DefinesTransaction {
-        DefinesDAO.Companion.all().map(::daoToModel)
+        DefinesDAO.all().map(::daoToModel)
     }
 
     override suspend fun allImplements(): List<Implements> = ImplementsTransaction {
-        ImplementsDAO.Companion.all().map(::daoToModel)
+        ImplementsDAO.all().map(::daoToModel)
     }
 
     override suspend fun allInteracts(): List<Interacts> = InteractsTransaction {
-        InteractsDAO.Companion.all().map(::daoToModel)
+        InteractsDAO.all().map(::daoToModel)
     }
 
     override suspend fun allSampling(): List<Sampling> = SamplingTransaction {
-        SamplingDAO.Companion.all().map(::daoToModel)
+        SamplingDAO.all().map(::daoToModel)
     }
 
     override suspend fun addHDT(hdt: HumanDigitalTwin): Unit = HumanDigitalTwinTransaction {
-        HumanDigitalTwinDAO.Companion.new {
+        HumanDigitalTwinDAO.new {
             name = hdt.name
         }
     }
 
     override suspend fun addInterface(int: Interface): Unit = InterfaceTransaction {
-        InterfaceDAO.Companion.new {
+        InterfaceDAO.new {
             name = int.name
             ipAddress = int.ipAddress
             port = int.port
@@ -82,14 +82,14 @@ class PostgresHDTRepository : HDTRepository {
     }
 
     override suspend fun addProperty(prop: Property): Unit = PropertyTransaction {
-        PropertyDAO.Companion.new {
+        PropertyDAO.new {
             name = prop.name
             description = prop.description
         }
     }
 
     override suspend fun addTime(time: Time): Unit = TimeTransaction {
-        TimeDAO.Companion.new {
+        TimeDAO.new {
             dateEnter = time.dateEnter
             dateStart = time.dateStart
             dateEnd = time.dateEnd
@@ -97,7 +97,7 @@ class PostgresHDTRepository : HDTRepository {
     }
 
     override suspend fun addValue(valu: Value): Unit = ValueTransaction {
-        ValueDAO.Companion.new {
+        ValueDAO.new {
             name = valu.name
             value = valu.value
             type = valu.type
@@ -105,35 +105,35 @@ class PostgresHDTRepository : HDTRepository {
     }
 
     override suspend fun addAssociated(associated: Associated): Unit = AssociatedTransaction {
-        AssociatedDAO.Companion.new {
+        AssociatedDAO.new {
             property_id = associated.property_id
             interface_id = associated.inteface_id
         }
     }
 
     override suspend fun addDefines(defines: Defines): Unit = DefinesTransaction {
-        DefinesDAO.Companion.new {
+        DefinesDAO.new {
             property_id = defines.property_id
             value_id = defines.value_id
         }
     }
 
     override suspend fun addImplements(implements: Implements): Unit = ImplementsTransaction {
-        ImplementsDAO.Companion.new {
+        ImplementsDAO.new {
             property_id = implements.property_id
             humandigitaltwin_id = implements.humandigitaltwin_id
         }
     }
 
     override suspend fun addInteracts(interacts: Interacts): Unit = InteractsTransaction {
-        InteractsDAO.Companion.new {
+        InteractsDAO.new {
             humandigitaltwin_id = interacts.humandigitaltwin_id
             interface_id = interacts.inteface_id
         }
     }
 
     override suspend fun addSampling(sampling: Sampling): Unit = SamplingTransaction {
-        SamplingDAO.Companion.new {
+        SamplingDAO.new {
             time_id = sampling.time_id
             value_id = sampling.value_id
         }
