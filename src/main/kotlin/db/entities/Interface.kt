@@ -4,9 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Interface(
+    val id: Int = 0,
     val name: String,
-    val ipAddress: String,
+    val ipaddress: String,
     val port: Int,
-    val clientId: String,
+    val clientid: String,
     val type: String
 )

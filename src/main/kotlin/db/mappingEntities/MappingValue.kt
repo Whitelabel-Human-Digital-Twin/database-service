@@ -1,33 +1,11 @@
 package io.github.whdt.db.mappingEntities
 
-import io.github.whdt.db.JdbcTransactionManager
-import io.github.whdt.db.entities.Value
-import org.jetbrains.exposed.v1.core.Transaction
-import org.jetbrains.exposed.v1.core.dao.id.EntityID
-import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
-import org.jetbrains.exposed.v1.dao.IntEntity
-import org.jetbrains.exposed.v1.dao.IntEntityClass
+import org.jetbrains.exposed.v1.core.Table
 
-object ValueTable : IntIdTable("value") {
+object ValueTable : Table("value") {
+    val id = integer("id").autoIncrement()
     val name = varchar("name", 100)
     val value = varchar("value", 255)
     val type = varchar("type", 50)
-
+    override val primaryKey = PrimaryKey(id)
 }
-
-class ValueDAO(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<ValueDAO>(ValueTable)
-
-    var name by ValueTable.name
-    var value by ValueTable.value
-    var type by ValueTable.type
-}
-
-suspend fun <T> ValueTransaction(block: suspend Transaction.() -> T): T =
-    JdbcTransactionManager.execute(block)
-
-fun daoToModel(dao: ValueDAO) = Value(
-    dao.name,
-    dao.value,
-    dao.type
-)

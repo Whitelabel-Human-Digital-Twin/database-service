@@ -1,15 +1,7 @@
 package io.github.whdt.db.repository
 
-import io.github.whdt.db.entities.HumanDigitalTwin
-import io.github.whdt.db.entities.Interface
-import io.github.whdt.db.entities.Property
-import io.github.whdt.db.entities.Time
-import io.github.whdt.db.entities.Value
-import io.github.whdt.db.relations.Associated
-import io.github.whdt.db.relations.Defines
-import io.github.whdt.db.relations.Implements
-import io.github.whdt.db.relations.Interacts
-import io.github.whdt.db.relations.Sampling
+import io.github.whdt.db.entities.*
+import io.github.whdt.db.relations.*
 
 interface HDTRepository {
     suspend fun allHDT(): List<HumanDigitalTwin>
