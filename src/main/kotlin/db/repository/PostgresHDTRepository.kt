@@ -2,6 +2,11 @@ package io.github.whdt.db.repository
 
 import io.github.whdt.db.mappingEntities.*
 import io.github.whdt.db.entities.*
+import io.github.whdt.db.mappingRelations.AssociatedTable
+import io.github.whdt.db.mappingRelations.DefinesTable
+import io.github.whdt.db.mappingRelations.ImplementsTable
+import io.github.whdt.db.mappingRelations.InteractsTable
+import io.github.whdt.db.mappingRelations.SamplingTable
 import io.github.whdt.db.relations.*
 import org.jetbrains.exposed.v1.r2dbc.insert
 import kotlinx.coroutines.flow.map
@@ -58,9 +63,9 @@ class PostgresHDTRepository : HDTRepository {
             .map {
                 Time(
                     id = it[TimeTable.id],
-                    dateEnter = it[TimeTable.dateEnter],
-                    dateStart = it[TimeTable.dateStart],
-                    dateEnd = it[TimeTable.dateEnd]
+                    dateenter = it[TimeTable.dateenter],
+                    datestart = it[TimeTable.datestart],
+                    dateend = it[TimeTable.dateend]
                 )
             }
             .toList()
@@ -81,23 +86,68 @@ class PostgresHDTRepository : HDTRepository {
     }
 
     override suspend fun allAssociated(): List<Associated> = suspendTransaction {
-        TODO("Not yet implemented")
+        AssociatedTable
+            .selectAll()
+            .map {
+                Associated(
+                    id = it[AssociatedTable.id],
+                    property_id = it[AssociatedTable.property_id],
+                    interface_id = it[AssociatedTable.interface_id]
+                )
+            }
+            .toList()
     }
 
     override suspend fun allDefines(): List<Defines> = suspendTransaction {
-        TODO("Not yet implemented")
+        DefinesTable
+            .selectAll()
+            .map{
+                Defines(
+                    id = it[DefinesTable.id],
+                    property_id = it[DefinesTable.property_id],
+                    value_id = it[DefinesTable.value_id]
+                )
+            }
+            .toList()
     }
 
     override suspend fun allImplements(): List<Implements> = suspendTransaction {
-        TODO("Not yet implemented")
+        ImplementsTable
+            .selectAll()
+            .map{
+                Implements(
+                    id = it[ImplementsTable.id],
+                    property_id = it[ImplementsTable.property_id],
+                    humandigitaltwin_id = it[ImplementsTable.humandigitaltwin_id]
+                )
+            }
+            .toList()
     }
 
     override suspend fun allInteracts(): List<Interacts> = suspendTransaction {
-        TODO("Not yet implemented")
+        InteractsTable
+            .selectAll()
+            .map{
+                Interacts(
+                    id = it[InteractsTable.id],
+                    humandigitaltwin_id = it[InteractsTable.humandigitaltwin_id],
+                    interface_id = it[InteractsTable.interface_id]
+                )
+            }
+            .toList()
     }
 
     override suspend fun allSampling(): List<Sampling> = suspendTransaction {
-        TODO("Not yet implemented")
+        SamplingTable
+            .selectAll()
+            .map{
+                Sampling(
+                    id = it[SamplingTable.id],
+                    time_id = it[SamplingTable.time_id],
+                    value_id = it[SamplingTable.value_id]
+                )
+            }
+            .toList()
     }
 
     override suspend fun addHDT(hdt: HumanDigitalTwin): Unit  = suspendTransaction {
@@ -125,9 +175,9 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addTime(time: Time): Unit  = suspendTransaction {
         TimeTable.insert {
-            it[TimeTable.dateEnter] = time.dateEnter
-            it[TimeTable.dateStart] = time.dateStart
-            it[TimeTable.dateEnd] = time.dateEnd
+            it[TimeTable.dateenter] = time.dateenter
+            it[TimeTable.datestart] = time.datestart
+            it[TimeTable.dateend] = time.dateend
         }
     }
 
@@ -139,24 +189,44 @@ class PostgresHDTRepository : HDTRepository {
         }
     }
 
-    override suspend fun addAssociated(associated: Associated) {
-        TODO("Not yet implemented")
+    override suspend fun addAssociated(associated: Associated): Unit  = suspendTransaction {
+        AssociatedTable.insert {
+            it[AssociatedTable.id] = associated.id
+            it[AssociatedTable.property_id] = associated.property_id
+            it[AssociatedTable.interface_id] = associated.interface_id
+        }
     }
 
-    override suspend fun addDefines(defines: Defines) {
-        TODO("Not yet implemented")
+    override suspend fun addDefines(defines: Defines): Unit  = suspendTransaction {
+       DefinesTable.insert {
+           it[DefinesTable.id] = defines.id
+           it[DefinesTable.property_id] = defines.property_id
+           it[DefinesTable.value_id] = defines.value_id
+       }
     }
 
-    override suspend fun addImplements(implements: Implements) {
-        TODO("Not yet implemented")
+    override suspend fun addImplements(implements: Implements): Unit  = suspendTransaction {
+        ImplementsTable.insert {
+            it[ImplementsTable.id] = implements.id
+            it[ImplementsTable.property_id] = implements.property_id
+            it[ImplementsTable.humandigitaltwin_id] = implements.humandigitaltwin_id
+        }
     }
 
-    override suspend fun addInteracts(interacts: Interacts) {
-        TODO("Not yet implemented")
+    override suspend fun addInteracts(interacts: Interacts): Unit  = suspendTransaction {
+        InteractsTable.insert {
+            it[InteractsTable.id] = interacts.id
+            it[InteractsTable.humandigitaltwin_id] = interacts.humandigitaltwin_id
+            it[InteractsTable.interface_id] = interacts.interface_id
+        }
     }
 
-    override suspend fun addSampling(sampling: Sampling) {
-        TODO("Not yet implemented")
+    override suspend fun addSampling(sampling: Sampling): Unit  = suspendTransaction {
+        SamplingTable.insert {
+            it[SamplingTable.id] = sampling.id
+            it[SamplingTable.time_id] = sampling.time_id
+            it[SamplingTable.value_id] = sampling.value_id
+        }
     }
 
 

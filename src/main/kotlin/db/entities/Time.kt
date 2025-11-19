@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Time(
     val id: Int = 0,
-    val dateEnter: LocalDateTime,
-    val dateStart: LocalDateTime,
-    val dateEnd: LocalDateTime
+    val dateenter: LocalDateTime ? = null,
+    val datestart: LocalDateTime ? = null,
+    val dateend: LocalDateTime ? = null
 )

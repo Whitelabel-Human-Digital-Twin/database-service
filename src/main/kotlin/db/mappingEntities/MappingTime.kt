@@ -5,8 +5,8 @@ import org.jetbrains.exposed.v1.datetime.*
 
 object TimeTable : Table("time") {
     val id = integer("id").autoIncrement()
-    val dateEnter = datetime("dateEnter")
-    val dateStart = datetime("dateStart")
-    val dateEnd = datetime("dateEnd")
+    val dateenter = datetime("dateenter").nullable()
+    val datestart = datetime("datestart").nullable()
+    val dateend = datetime("dateend").nullable()
     override val primaryKey = PrimaryKey(id)
 }

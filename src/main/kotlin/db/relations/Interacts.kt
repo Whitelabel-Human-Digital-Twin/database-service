@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Interacts(
+    val id: Int = 0,
     val humandigitaltwin_id : Int,
-    val inteface_id : Int
+    val interface_id : Int
 
 )
