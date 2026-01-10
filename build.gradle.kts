@@ -53,3 +53,7 @@ dependencies {
     implementation("io.github.whdt:whdt-distributed:0.1.0")
     implementation("io.github.whdt:whdt-wldt-plugin:0.3.0")
 }
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}

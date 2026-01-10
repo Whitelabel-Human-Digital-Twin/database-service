@@ -2,6 +2,7 @@ package io.github.whdt.db.repository
 
 import io.github.whdt.db.entities.*
 import io.github.whdt.db.relations.*
+import kotlinx.datetime.LocalDateTime
 
 interface HDTRepository {
     suspend fun allHDT(): List<HumanDigitalTwin>
@@ -24,4 +25,12 @@ interface HDTRepository {
     suspend fun addImplements(implements: Implements)
     suspend fun addInteracts(interacts: Interacts)
     suspend fun addSampling(sampling: Sampling)
+    suspend fun detTime(timeLess : LocalDateTime,timeGreter : LocalDateTime): List<Int>
+    suspend fun valueOfTime(timeLess : LocalDateTime,timeGreter : LocalDateTime): List<Value>
+    suspend fun detProperty(propertyName: String): List<Int>
+    suspend fun minPropertyOfTime(propertyName : String,timeLess : LocalDateTime,timeGreter : LocalDateTime): Value?
+    suspend fun maxPropertyOfTime(propertyName : String,timeLess : LocalDateTime,timeGreter : LocalDateTime): Value?
+    /*suspend fun avgPropertyOfTime(propertyName : String,timeLess : LocalDateTime,timeGreter : LocalDateTime): Value*/
+    suspend fun valueInRange(minValue : String, maxValue : String) : List<Value>
+    suspend fun dtPropertyRange(propertyName : String, minValue : String, maxValue : String): List<HumanDigitalTwin>
 }
