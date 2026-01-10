@@ -8,11 +8,17 @@ import io.github.whdt.db.mappingRelations.ImplementsTable
 import io.github.whdt.db.mappingRelations.InteractsTable
 import io.github.whdt.db.mappingRelations.SamplingTable
 import io.github.whdt.db.relations.*
+import kotlinx.coroutines.flow.last
 import org.jetbrains.exposed.v1.r2dbc.insert
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import org.jetbrains.exposed.v1.core.lessEq
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
+import kotlinx.datetime.LocalDateTime
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.greaterEq
 
 class PostgresHDTRepository : HDTRepository {
 
@@ -227,6 +233,93 @@ class PostgresHDTRepository : HDTRepository {
             it[SamplingTable.time_id] = sampling.time_id
             it[SamplingTable.value_id] = sampling.value_id
         }
+    }
+
+    override suspend fun detTime(
+        timeLess : LocalDateTime
+        ,timeGreter : LocalDateTime
+    ): List<Int> = suspendTransaction {
+        TimeTable
+            .selectAll()
+            .where{
+                (TimeTable.dateenter lessEq timeGreter ) and
+                        (TimeTable.dateenter greaterEq timeLess )
+            }
+            .map {
+                it[TimeTable.id]
+            }
+            .toList()
+    }
+
+    override suspend fun valueOfTime(
+        timeLess : LocalDateTime,
+        timeGreter : LocalDateTime
+    ): List<Value> {
+        val timeId = detTime(timeLess, timeGreter)
+        val rel = allSampling().filter{timeId.contains(it.component2())}.map{it.value_id}
+        return allValue().filter{rel.contains(it.component1())}
+    }
+
+    override suspend fun detProperty(propertyName: String): List<Int> = suspendTransaction{
+        PropertyTable
+            .selectAll()
+            .where{
+                (PropertyTable.name.eq(propertyName))
+            }
+            .map {
+                it[PropertyTable.id]
+            }.toList()
+    }
+
+    override suspend fun minPropertyOfTime(
+        propertyName: String,
+        timeLess: LocalDateTime,
+        timeGreter: LocalDateTime
+    ): Value? {
+        val valu = valueOfTime(timeLess, timeGreter)
+        val id_property = detProperty(propertyName).first()
+        return valu.filter{it.component1() == id_property}.minByOrNull{ it.component3().toInt() }
+    }
+
+    override suspend fun maxPropertyOfTime(
+        propertyName: String,
+        timeLess: LocalDateTime,
+        timeGreter: LocalDateTime
+    ): Value? {
+        val valu = valueOfTime(timeLess, timeGreter)
+        val id_property = detProperty(propertyName).first()
+        return valu.filter{it.component1() == id_property}.maxByOrNull{ it.component3().toInt() }
+    }
+    /*override suspend fun avgPropertyOfTime(
+        propertyName: String,
+        timeLess: LocalDateTime,
+        timeGreter: LocalDateTime
+    ): List<Value> {
+        val timeId = detTime(timeLess, timeGreter)
+        return allValue().filter{rel.contains(it.component1())}
+    }*/
+
+    override suspend fun valueInRange(
+        minValue: String,
+        maxValue: String
+    ): List<Value> {
+        val IntValue = allValue().filter { it.type == "Int" }.filter { it.value.toInt() in minValue.toInt()..maxValue.toInt() }
+        val DoubleValue = allValue().filter { it.type == "Double" }.filter { it.value.toDouble() in minValue.toDouble()..maxValue.toDouble() }
+        return IntValue
+    }
+
+
+    override suspend fun dtPropertyRange(
+        propertyName: String,
+        minValue: String,
+        maxValue: String
+    ): List<HumanDigitalTwin> {
+        val rangeValue = valueInRange(minValue, maxValue).map { it.component1() }
+        val id_property = detProperty(propertyName).filter { rangeValue.contains(it)}
+        val imp = allImplements().filter { id_property.contains(it.property_id)}.map{it.component3()}
+        return allHDT().filter { imp.contains(it.id) }
+
+
     }
 
 

@@ -35,7 +35,8 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test InterfaceTable ") {
         val testName = "Interface_${Random.nextInt(100001)}"
-        val newInterface = Interface(name = testName, ipaddress = "127.0.0.1", port = 5 , clientid = "prova", type = "HTTP" )
+        val randIp = "${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}"
+        val newInterface = Interface(name = testName, ipaddress = randIp , port = 5 , clientid = "prova", type = "HTTP" )
         repository.addInterface(newInterface)
 
         val allInterface = repository.allInterface()
@@ -102,7 +103,7 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test Value ") {
         val testName = "Value_${Random.nextInt(100001)}"
-        val newValue = Value(name = testName, value = "10", type = "Int" )
+        val newValue = Value(name = testName, value = "${Random.nextInt(100001)}", type = "Int" )
         repository.addValue(newValue)
 
         val allValue = repository.allValue()
@@ -112,68 +113,124 @@ class PostgresHDTRepositoryTest : FunSpec({
     }
 
     test("Test Associated ") {
-        val testid1 = repository.allProperty().get(0).component1()
-        val testid2 = repository.allInterface().get(0).component1()
-        val newAssociated = Associated(property_id = testid1, interface_id = testid2)
+        val testName1 = "Property_${Random.nextInt(100001)}"
+        val newProperty = Property(name = testName1, description = "Test description")
+        repository.addProperty(newProperty)
+        val testid1 = repository.allProperty().last().component1()
+
+        val testName2 = "Interface_${Random.nextInt(100001)}"
+        val randIp = "${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}"
+        val newInterface = Interface(name = testName2, ipaddress = randIp, port = 5 , clientid = "prova", type = "HTTP" )
+        repository.addInterface(newInterface)
+        val testid2 = repository.allInterface().last().component1()
+
+        val newAssociated = Associated(id = Random.nextInt(100001),property_id = testid1, interface_id = testid2)
         repository.addAssociated(newAssociated)
 
         val allAssociated = repository.allAssociated()
 
         allAssociated.shouldNotBeEmpty()
-        allAssociated.any { it.property_id == testid1 } shouldBe true
-        allAssociated.any { it.interface_id == testid2 } shouldBe true
+        allAssociated.any { (it.property_id == testid1) and  (it.interface_id == testid2) } shouldBe true
     }
 
     test("Test Defines ") {
-        val testid1 = repository.allProperty().get(0).component1()
-        val testid2 = repository.allValue().get(0).component1()
-        val newDefines = Defines(property_id = testid1, value_id = testid2)
+        val testName1 = "Property_${Random.nextInt(100001)}"
+        val newProperty = Property(name = testName1, description = "Test description")
+        repository.addProperty(newProperty)
+        val testid1 = repository.allProperty().last().component1()
+
+        val testName2 = "Value_${Random.nextInt(100001)}"
+        val newValue = Value(name = testName2, value = "10", type = "Int" )
+        repository.addValue(newValue)
+        val testid2 = repository.allValue().last().component1()
+
+        val newDefines = Defines(id = Random.nextInt(100001),property_id = testid1, value_id = testid2)
         repository.addDefines(newDefines)
 
         val allDefines = repository.allDefines()
 
         allDefines.shouldNotBeEmpty()
-        allDefines.any { it.property_id == testid1 } shouldBe true
-        allDefines.any { it.value_id == testid2 } shouldBe true
+        allDefines.any { (it.property_id == testid1) and (it.value_id == testid2) } shouldBe true
     }
 
     test("Test Implements ") {
-        val testid1 = repository.allProperty().get(0 ).component1()
-        val testid2 = repository.allHDT().get(0).component1()
-        val newImplements = Implements(property_id = testid1, humandigitaltwin_id = testid2)
+        val testName1 = "Property_${Random.nextInt(100001)}"
+        val newProperty = Property(name = testName1, description = "Test description")
+        repository.addProperty(newProperty)
+        val testid1 = repository.allProperty().last().component1()
+
+        val testName2 = "HDT_${Random.nextInt(100001)}"
+        val newHDT = HumanDigitalTwin(name = testName2)
+        repository.addHDT(newHDT)
+        val testid2 = repository.allHDT().last().component1()
+
+        val newImplements = Implements(id = Random.nextInt(100001),property_id = testid1, humandigitaltwin_id = testid2)
         repository.addImplements(newImplements)
 
         val allImplements = repository.allImplements()
 
         allImplements.shouldNotBeEmpty()
-        allImplements.any { it.property_id == testid1 } shouldBe true
-        allImplements.any { it.humandigitaltwin_id == testid2 } shouldBe true
+        allImplements.any { (it.property_id == testid1) and (it.humandigitaltwin_id == testid2) } shouldBe true
     }
 
     test("Test Interacts ") {
-        val testid1 = repository.allHDT().get(0).component1()
-        val testid2 = repository.allInterface().get(0).component1()
-        val newInteracts = Interacts(humandigitaltwin_id = testid1, interface_id = testid2)
+        val testName1 = "HDT_${Random.nextInt(100001)}"
+        val newHDT = HumanDigitalTwin(name = testName1)
+        repository.addHDT(newHDT)
+        val testid1 = repository.allHDT().last().component1()
+
+        val testName2 = "Interface_${Random.nextInt(100001)}"
+        val randIp = "${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}"
+        val newInterface = Interface(name = testName2, ipaddress = randIp, port = 5 , clientid = "prova", type = "HTTP" )
+        repository.addInterface(newInterface)
+        val testid2 = repository.allInterface().last().component1()
+
+        val newInteracts = Interacts(id = Random.nextInt(100001),humandigitaltwin_id = testid1, interface_id = testid2)
         repository.addInteracts(newInteracts)
 
         val allInteracts = repository.allInteracts()
 
         allInteracts.shouldNotBeEmpty()
-        allInteracts.any { it.humandigitaltwin_id == testid1 } shouldBe true
-        allInteracts.any { it.interface_id == testid2 } shouldBe true
+        allInteracts.any { (it.humandigitaltwin_id == testid1) and (it.interface_id == testid2) } shouldBe true
     }
 
     test("Test Sampling ") {
-        val testid1 = repository.allTime().get(0).component1()
-        val testid2 = repository.allValue().get(0).component1()
-        val newSampling = Sampling(time_id = testid1, value_id = testid2)
+        val testTime = LocalDateTime(
+            Random.nextInt(2000, 2024),
+            Random.nextInt(1, 13),
+            Random.nextInt(1, 29),
+            Random.nextInt(0, 24),
+            Random.nextInt(0, 60),
+            Random.nextInt(0, 60)
+        )
+        val newTime = Time( dateenter = testTime)
+        repository.addTime(newTime)
+        val testid1 = repository.allTime().last().component1()
+
+        val testName = "Value_${Random.nextInt(100001)}"
+        val newValue = Value(name = testName, value = "${Random.nextInt(100001)}", type = "Int" )
+        repository.addValue(newValue)
+        val testid2 = repository.allValue().last().component1()
+
+        val newSampling = Sampling(id = Random.nextInt(100001),time_id = testid1, value_id = testid2)
         repository.addSampling(newSampling)
 
         val allSampling = repository.allSampling()
 
         allSampling.shouldNotBeEmpty()
-        allSampling.any { it.time_id == testid1 } shouldBe true
-        allSampling.any { it.value_id == testid2 } shouldBe true
+        allSampling.any { (it.time_id == testid1) and (it.value_id == testid2) } shouldBe true
     }
+
+    test("Test search valuo by time ") {
+        val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
+        val testTimeGreater = LocalDateTime(2017,10,15,0,0,0)
+        val id_detTime = repository.detTime(testTimeLess, testTimeGreater)
+        id_detTime.shouldNotBeEmpty()
+        id_detTime.forEach { it -> println("${it}" ) }
+        val valu = repository.valueOfTime(testTimeLess, testTimeGreater)
+        valu.shouldNotBeEmpty()
+        valu.forEach { value -> println("valore: ${value.component1()}, ${value.component2()}, ${value.component3()}, ${value.component4()}") }
+    }
+
 
 })
