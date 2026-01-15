@@ -1,9 +1,9 @@
-package io.github.whdt.db.query.dsl.filter
+package db.query.dsl.filter
 
-import io.github.whdt.db.query.dsl.AndFilter
-import io.github.whdt.db.query.dsl.DtQueryDsl
-import io.github.whdt.db.query.dsl.Filter
-import io.github.whdt.db.query.dsl.PropertyRef
+import db.query.model.AndFilter
+import db.query.dsl.DtQueryDsl
+import db.query.model.Filter
+import db.query.model.PropertyRef
 
 @DtQueryDsl
 class FilterBuilder {

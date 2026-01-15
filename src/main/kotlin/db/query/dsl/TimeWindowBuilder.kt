@@ -1,5 +1,6 @@
-package io.github.whdt.db.query.dsl
+package db.query.dsl
 
+import db.query.model.TimeWindow
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days

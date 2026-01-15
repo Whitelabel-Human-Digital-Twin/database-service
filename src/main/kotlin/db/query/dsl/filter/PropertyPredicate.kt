@@ -1,12 +1,12 @@
-package io.github.whdt.db.query.dsl.filter
+package db.query.dsl.filter
 
 import io.github.whdt.core.hdt.model.property.PropertyValue
 import io.github.whdt.core.hdt.model.property.PropertyValue.*
-import io.github.whdt.db.query.dsl.ComparisonFilter
-import io.github.whdt.db.query.dsl.ComparisonOp
-import io.github.whdt.db.query.dsl.Filter
-import io.github.whdt.db.query.dsl.InFilter
-import io.github.whdt.db.query.dsl.PropertyRef
+import db.query.model.ComparisonFilter
+import db.query.model.ComparisonOp
+import db.query.model.Filter
+import db.query.model.InFilter
+import db.query.model.PropertyRef
 
 class PropertyPredicate(
     private val property: PropertyRef,
@@ -25,7 +25,7 @@ class PropertyPredicate(
     infix fun lt(value: Number) =
         emit(compare(ComparisonOp.LT, DoublePropertyValue(value.toDouble())))
 
-    fun `in`(vararg values: String) =
+    fun inside(vararg values: String) =
         emit(InFilter(property, values.map(::StringPropertyValue)))
 
     private fun compare(op: ComparisonOp, value: PropertyValue): Filter =

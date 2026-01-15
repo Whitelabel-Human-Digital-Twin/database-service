@@ -1,8 +1,14 @@
-package io.github.whdt.db.query.dsl
+package db.query.model
 
 import io.github.whdt.core.hdt.model.property.PropertyValue
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Serializable
+data class WhereClause(
+    val filters: List<Filter>
+)
+
 
 @Serializable
 sealed interface Filter

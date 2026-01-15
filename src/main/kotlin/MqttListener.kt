@@ -5,9 +5,8 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish
 import io.github.whdt.core.hdt.model.property.Property
 import io.github.whdt.distributed.message.Message
 import io.github.whdt.distributed.namespace.Namespace
-import io.github.whdt.model.DomainCommand
-import io.github.whdt.model.NotifyFailureCommand
-import io.github.whdt.model.UpdateProperty
+import model.DomainCommand
+import model.NotifyFailureCommand
 import io.ktor.server.application.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
@@ -74,12 +73,7 @@ fun mapToDomainCommand(
         topic.endsWith(Namespace.PROPERTY_UPDATE_REQUEST_POSTFIX_MQTT) -> {
             val prop = message.unwrap<Property>().getOrNull()
             if (prop != null) {
-                UpdateProperty(
-                    hdt = message.hdt,
-                    property = prop.id,
-                    value = Json.encodeToJsonElement(prop),
-                    receivedAt = receivedAt
-                )
+                TODO()
             } else {
                 NotifyFailureCommand("Can't read property for topic $topic")
             }

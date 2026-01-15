@@ -1,7 +1,9 @@
 package io.github.whdt
 
+import configureDatabaseWorker
+import configureRouting
 import io.github.whdt.db.configureDatabases
-import io.github.whdt.model.DomainCommand
+import model.DomainCommand
 import io.ktor.server.application.*
 import kotlinx.coroutines.channels.Channel
 

@@ -1,4 +1,4 @@
-package io.github.whdt.db.query.dsl
+package db.query.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

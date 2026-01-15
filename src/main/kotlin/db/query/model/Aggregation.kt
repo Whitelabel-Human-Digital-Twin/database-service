@@ -1,21 +1,35 @@
-package io.github.whdt.db.query.dsl
+package db.query.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("aggregate")
-data class Aggregation(
-    val property: PropertyRef,
-    val function: AggregationFunction,
-    val alias: String? = null
-)
-
-@Serializable
-enum class AggregationFunction {
-    @SerialName("avg") AVG,
-    @SerialName("min") MIN,
-    @SerialName("max") MAX,
-    @SerialName("sum") SUM,
-    @SerialName("count") COUNT
+sealed class Aggregation {
+    abstract val field: String
+    abstract val alias: String?
 }
+
+@Serializable @SerialName("avg")
+data class Avg(
+    override val field: String,
+    override val alias: String? = null
+) : Aggregation()
+
+@Serializable @SerialName("min")
+data class Min(
+    override val field: String,
+    override val alias: String? = null
+) : Aggregation()
+
+@Serializable @SerialName("max")
+data class Max(
+    override val field: String,
+    override val alias: String? = null
+) : Aggregation()
+
+@Serializable @SerialName("count")
+data class Count(
+    override val field: String,
+    override val alias: String? = null
+) : Aggregation()
+

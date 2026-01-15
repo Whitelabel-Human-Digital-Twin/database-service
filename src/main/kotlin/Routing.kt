@@ -1,6 +1,4 @@
-package io.github.whdt
-
-import io.github.whdt.model.DomainCommand
+import model.DomainCommand
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
