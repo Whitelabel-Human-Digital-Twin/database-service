@@ -2,6 +2,7 @@ package db.query.dsl.filter
 
 import db.query.dsl.DtQueryDsl
 import db.query.model.AndFilter
+import db.query.model.DtIdFilter
 import db.query.model.Filter
 import db.query.model.PropertyRef
 import db.query.model.WhereClause
@@ -11,6 +12,9 @@ class WhereBuilder {
 
     private val filters = mutableListOf<Filter>()
 
+    fun dtId(id: String) {
+        filters += DtIdFilter(id)
+    }
     /** Start building a filter for a property */
     fun property(name: String): PropertyPredicate =
         PropertyPredicate(PropertyRef(name)) { filters += it }

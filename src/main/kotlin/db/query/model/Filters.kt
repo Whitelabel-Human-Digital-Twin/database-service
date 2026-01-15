@@ -9,9 +9,12 @@ data class WhereClause(
     val filters: List<Filter>
 )
 
-
 @Serializable
 sealed interface Filter
+
+@Serializable
+@SerialName("dt_id")
+data class DtIdFilter(val id: String) : Filter
 
 @Serializable
 @SerialName("compare")
