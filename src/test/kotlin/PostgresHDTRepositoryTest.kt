@@ -143,8 +143,7 @@ class PostgresHDTRepositoryTest : FunSpec({
         val newValue = Value(name = testName2, value = "10", type = "Int" )
         repository.addValue(newValue)
         val testid2 = repository.allValue().last().component1()
-
-        val newDefines = Defines(id = Random.nextInt(100001),property_id = testid1, value_id = testid2)
+        val newDefines = Defines(id = Random.nextInt(100001), property_id = testid1, value_id = testid2)
         repository.addDefines(newDefines)
 
         val allDefines = repository.allDefines()
@@ -203,25 +202,24 @@ class PostgresHDTRepositoryTest : FunSpec({
             Random.nextInt(0, 60),
             Random.nextInt(0, 60)
         )
-        val newTime = Time( dateenter = testTime)
+        val newTime = Time(dateenter = testTime)
         repository.addTime(newTime)
         val testid1 = repository.allTime().last().component1()
 
         val testName = "Value_${Random.nextInt(100001)}"
-        val newValue = Value(name = testName, value = "${Random.nextInt(100001)}", type = "Int" )
+        val newValue = Value(name = testName, value = "${Random.nextInt(100001)}", type = "Int")
         repository.addValue(newValue)
         val testid2 = repository.allValue().last().component1()
 
-        val newSampling = Sampling(id = Random.nextInt(100001),time_id = testid1, value_id = testid2)
+        val newSampling = Sampling(id = Random.nextInt(100001), time_id = testid1, value_id = testid2)
         repository.addSampling(newSampling)
-
         val allSampling = repository.allSampling()
 
         allSampling.shouldNotBeEmpty()
         allSampling.any { (it.time_id == testid1) and (it.value_id == testid2) } shouldBe true
     }
 
-    test("Test search valuo by time ") {
+    test("Test search value by time ") {
         val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
         val testTimeGreater = LocalDateTime(2017,10,15,0,0,0)
         val id_detTime = repository.detTime(testTimeLess, testTimeGreater)
@@ -232,5 +230,62 @@ class PostgresHDTRepositoryTest : FunSpec({
         valu.forEach { value -> println("valore: ${value.component1()}, ${value.component2()}, ${value.component3()}, ${value.component4()}") }
     }
 
+    test("Test search min value of property by time ") {
+        val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
+        val testTimeGreater = LocalDateTime(2029,10,15,0,0,0)
+        val nameProp = "Property_25566"
+        val valu = repository.minPropertyOfTime(nameProp,testTimeLess,testTimeGreater)
+        println("il valore più basso è $valu")
+    }
 
+    test("Test search max value of property by time ") {
+        val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
+        val testTimeGreater = LocalDateTime(2029,10,15,0,0,0)
+        val nameProp = "Property_25566"
+        val valu = repository.maxPropertyOfTime(nameProp,testTimeLess,testTimeGreater)
+        println("il valore più alto è $valu")
+
+    }
+
+    test("Test search dt "){
+        val testName1 = "Property_${Random.nextInt(100001)}"
+        val newProperty1 = Property(name = testName1, description = "Test description")
+        repository.addProperty(newProperty1)
+        val testid1 = repository.allProperty().last().component1()
+
+        val testName2 = "Value_${Random.nextInt(100001)}"
+        val newValue1 = Value(name = testName2, value = "${Random.nextInt(50,100)}", type = "Int" )
+        repository.addValue(newValue1)
+        val testid2 = repository.allValue().last().component1()
+
+        val testName3 = "HDT_${Random.nextInt(100001)}"
+        val newHDT = HumanDigitalTwin(name = testName3)
+        repository.addHDT(newHDT)
+        val testid3 = repository.allHDT().last().component1()
+
+        val testName4 = "Property_${Random.nextInt(100001)}"
+        val newProperty2 = Property(name = testName4, description = "Test description")
+        repository.addProperty(newProperty2)
+        val testid4 = repository.allProperty().last().component1()
+
+        val testName5 = "Value_${Random.nextInt(100001)}"
+        val newValue2 = Value(name = testName5, value = "${Random.nextInt(10,40)}", type = "Int" )
+        repository.addValue(newValue2)
+        val testid5 = repository.allValue().last().component1()
+
+        val newImplements1 = Implements(id = Random.nextInt(100001),property_id = testid1, humandigitaltwin_id = testid3)
+        val newImplements2 = Implements(id = Random.nextInt(100001),property_id = testid4, humandigitaltwin_id = testid3)
+        val newDefines1 = Defines(id = Random.nextInt(100001), property_id = testid1, value_id = testid2)
+        val newDefines2 = Defines(id = Random.nextInt(100001), property_id = testid4, value_id = testid5)
+        repository.addImplements(newImplements1)
+        repository.addImplements(newImplements2)
+        repository.addDefines(newDefines1)
+        repository.addDefines(newDefines2)
+        val dt = repository.dtPropertyRange(testName1 ,"50","100")
+
+        dt.shouldNotBeEmpty()
+        dt.forEach { println("nome HDT : ${it.name}" ) }
+
+    }
+    
 })
