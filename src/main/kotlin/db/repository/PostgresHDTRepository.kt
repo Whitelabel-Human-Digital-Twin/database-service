@@ -8,7 +8,6 @@ import io.github.whdt.db.mappingRelations.ImplementsTable
 import io.github.whdt.db.mappingRelations.InteractsTable
 import io.github.whdt.db.mappingRelations.SamplingTable
 import io.github.whdt.db.relations.*
-import kotlinx.coroutines.flow.last
 import org.jetbrains.exposed.v1.r2dbc.insert
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -250,7 +249,7 @@ class PostgresHDTRepository : HDTRepository {
             }
             .toList()
     }
-
+    /* farne una per proprietà e una per dt */
     override suspend fun valueOfTime(
         timeLess : LocalDateTime,
         timeGreter : LocalDateTime
@@ -258,6 +257,27 @@ class PostgresHDTRepository : HDTRepository {
         val timeId = detTime(timeLess, timeGreter)
         val rel = allSampling().filter{timeId.contains(it.component2())}.map{it.value_id}
         return allValue().filter{rel.contains(it.component1())}
+    }
+
+    override suspend fun valueOfTimeOfProp(
+        propName : String,
+        timeLess : LocalDateTime,
+        timeGreter : LocalDateTime
+    ): List<Value> {
+        val valOfTime = valueOfTime(timeLess, timeGreter)
+        val propId = detProperty(propName)
+        return valOfTime.filter { propId.contains(it.component1()) }
+    }
+
+    override suspend fun valueOfTimeOfDt(
+        hdtName : String,
+        timeLess : LocalDateTime,
+        timeGreter : LocalDateTime
+    ): List<Value> {
+        val idHdt = allHDT().filter { it.component2() == hdtName }.map{ it.id }.first()
+        val idProperty = allImplements().filter { it.humandigitaltwin_id == idHdt }.map{it.property_id}
+        val idValue = allDefines().filter { idProperty.contains(it.property_id) }.map { it.value_id }
+        return valueOfTime(timeLess,timeGreter).filter{idValue.contains(it.component1())}
     }
 
     override suspend fun detProperty(propertyName: String): List<Int> = suspendTransaction{
@@ -271,14 +291,39 @@ class PostgresHDTRepository : HDTRepository {
             }.toList()
     }
 
+    fun parsePrimitive(data: String, type: String): Any? {
+        val cleanType = type.trim().lowercase()
+        return try {
+            when (cleanType) {
+                "int"     -> data.toInt()
+                "long"    -> data.toLong()
+                "float"   -> data.toFloat()
+                "double"  -> data.toDouble()
+                "boolean" -> data.toBoolean()
+                "string"  -> data
+                else -> {
+                    println("Tipo non supportato: $type")
+                    null
+                }
+            }
+        } catch (e: NumberFormatException) {
+            println("Errore: Impossibile convertire '$data' in $cleanType")
+            null
+        }
+    }
+
     override suspend fun minPropertyOfTime(
         propertyName: String,
         timeLess: LocalDateTime,
         timeGreter: LocalDateTime
     ): Value? {
         val valu = valueOfTime(timeLess, timeGreter)
-        val id_property = detProperty(propertyName).first()
-        return valu.filter{it.component1() == id_property}.minByOrNull{ it.component3().toInt() }
+        val idValue = allDefines().filter{ it.property_id == detProperty(propertyName).first()}.map{it.value_id}
+        return valu.filter{idValue.contains(it.component1())}.minWithOrNull { a, b ->
+            val valA = parsePrimitive(a.component3(),a.component4()) as? Number
+            val valB = parsePrimitive(b.component3(),b.component4()) as? Number
+            compareValues(valA?.toDouble(), valB?.toDouble())
+        }
     }
 
     override suspend fun maxPropertyOfTime(
@@ -287,39 +332,49 @@ class PostgresHDTRepository : HDTRepository {
         timeGreter: LocalDateTime
     ): Value? {
         val valu = valueOfTime(timeLess, timeGreter)
-        val id_property = detProperty(propertyName).first()
-        return valu.filter{it.component1() == id_property}.maxByOrNull{ it.component3().toInt() }
+        val idValue = allDefines().filter{ it.property_id == detProperty(propertyName).first()}.map{it.value_id}
+        return valu.filter{idValue.contains(it.component1())}.maxWithOrNull{ a, b ->
+            val valA = parsePrimitive(a.component3(),a.component4()) as? Number
+            val valB = parsePrimitive(b.component3(),b.component4()) as? Number
+            compareValues(valA?.toDouble(), valB?.toDouble())
+        }
     }
-    /*override suspend fun avgPropertyOfTime(
+    override suspend fun avgPropertyOfTime(
         propertyName: String,
         timeLess: LocalDateTime,
         timeGreter: LocalDateTime
-    ): List<Value> {
-        val timeId = detTime(timeLess, timeGreter)
-        return allValue().filter{rel.contains(it.component1())}
-    }*/
+    ): Double {
+        val valu = valueOfTime(timeLess, timeGreter)
+        val idValue = allDefines().filter{ it.property_id == detProperty(propertyName).first()}.map{it.value_id}
+        return valu.filter{idValue.contains(it.component1())}
+                   .map{parsePrimitive(it.component3(),it.component4())}
+                   .filterIsInstance<Number>()
+                   .map{ it.toDouble() }
+                   .average()
+    }
 
     override suspend fun valueInRange(
         minValue: String,
         maxValue: String
     ): List<Value> {
-        val IntValue = allValue().filter { it.type == "Int" }.filter { it.value.toInt() in minValue.toInt()..maxValue.toInt() }
-        val DoubleValue = allValue().filter { it.type == "Double" }.filter { it.value.toDouble() in minValue.toDouble()..maxValue.toDouble() }
-        return IntValue
+        return allValue().filter {
+            val data = (parsePrimitive(it.component3(), it.component4()) as? Number)?.toDouble()
+            val min = (parsePrimitive(minValue, it.component4()) as? Number)?.toDouble()
+            val max = (parsePrimitive(maxValue, it.component4()) as? Number)?.toDouble()
+            data != null && min != null && max != null && data >= min && data <= max
+        }
     }
-
 
     override suspend fun dtPropertyRange(
         propertyName: String,
         minValue: String,
         maxValue: String
     ): List<HumanDigitalTwin> {
-        val rangeValue = valueInRange(minValue, maxValue).map { it.component1() }
-        val id_property = detProperty(propertyName).filter { rangeValue.contains(it)}
-        val imp = allImplements().filter { id_property.contains(it.property_id)}.map{it.component3()}
-        return allHDT().filter { imp.contains(it.id) }
-
-
+        val rangeValue = valueInRange(minValue, maxValue).map { it.id }
+        val idPropValu = allDefines().filter { rangeValue.contains(it.value_id) }.map{it.property_id}
+        val idProperty = detProperty(propertyName).filter { idPropValu.contains(it)}
+        val idHdt = allImplements().filter { idProperty.contains(it.property_id)}.map{it.component3()}
+        return allHDT().filter { idHdt.contains(it.id) }
     }
 
 

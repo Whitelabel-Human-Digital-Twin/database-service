@@ -27,10 +27,12 @@ interface HDTRepository {
     suspend fun addSampling(sampling: Sampling)
     suspend fun detTime(timeLess : LocalDateTime,timeGreter : LocalDateTime): List<Int>
     suspend fun valueOfTime(timeLess : LocalDateTime,timeGreter : LocalDateTime): List<Value>
+    suspend fun valueOfTimeOfProp(propName : String, timeLess : LocalDateTime, timeGreter : LocalDateTime): List<Value>
+    suspend fun valueOfTimeOfDt(hdtName : String, timeLess : LocalDateTime, timeGreter : LocalDateTime): List<Value>
     suspend fun detProperty(propertyName: String): List<Int>
     suspend fun minPropertyOfTime(propertyName : String,timeLess : LocalDateTime,timeGreter : LocalDateTime): Value?
     suspend fun maxPropertyOfTime(propertyName : String,timeLess : LocalDateTime,timeGreter : LocalDateTime): Value?
-    /*suspend fun avgPropertyOfTime(propertyName : String,timeLess : LocalDateTime,timeGreter : LocalDateTime): Value*/
+    suspend fun avgPropertyOfTime(propertyName : String,timeLess : LocalDateTime,timeGreter : LocalDateTime): Double
     suspend fun valueInRange(minValue : String, maxValue : String) : List<Value>
     suspend fun dtPropertyRange(propertyName : String, minValue : String, maxValue : String): List<HumanDigitalTwin>
 }
