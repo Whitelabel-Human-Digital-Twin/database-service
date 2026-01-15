@@ -12,6 +12,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
+import model.InsertProperty
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -73,7 +74,11 @@ fun mapToDomainCommand(
         topic.endsWith(Namespace.PROPERTY_UPDATE_REQUEST_POSTFIX_MQTT) -> {
             val prop = message.unwrap<Property>().getOrNull()
             if (prop != null) {
-                TODO()
+                InsertProperty(
+                    hdt = message.hdt,
+                    property = prop,
+                    receivedAt = receivedAt,
+                )
             } else {
                 NotifyFailureCommand("Can't read property for topic $topic")
             }
