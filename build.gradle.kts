@@ -35,8 +35,6 @@ dependencies {
     implementation("io.ktor:ktor-server-config-yaml")
     implementation("io.ktor:ktor-serialization-kotlinx-json:${ktor_version}")
     implementation("org.jetbrains.exposed:exposed-core:1.0.0-rc-1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:1.0.0-rc-1")
-    // https://mvnrepository.com/artifact/org.jetbrains.exposed/exposed-r2dbc
     implementation("org.jetbrains.exposed:exposed-r2dbc:1.0.0-rc-1")
     implementation("org.jetbrains.exposed:exposed-dao:1.0.0-rc-1")
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:1.0.0-rc-1")
@@ -48,7 +46,10 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:5.8.0")
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    implementation("com.hivemq:hivemq-mqtt-client:1.3.0")
 
-    implementation("io.github.whdt:whdt-core:0.1.1")
-    implementation("io.github.whdt:whdt-wldt-plugin:0.1.1")
+
+    implementation("io.github.whdt:whdt-core:0.3.0")
+    implementation("io.github.whdt:whdt-distributed:0.1.0")
+    implementation("io.github.whdt:whdt-wldt-plugin:0.3.0")
 }
