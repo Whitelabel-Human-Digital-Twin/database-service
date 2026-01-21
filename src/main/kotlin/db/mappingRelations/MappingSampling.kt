@@ -2,7 +2,7 @@ package io.github.whdt.db.mappingRelations
 
 import org.jetbrains.exposed.v1.core.Table
 
-object SamplingTable : Table("sampling") {
+object SamplingTable : Table("hdt.sampling") {
     val id = integer("id").autoIncrement()
     val time_id = integer( "time_id")
     val value_id = integer( "value_id")

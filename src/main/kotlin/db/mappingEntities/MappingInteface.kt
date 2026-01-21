@@ -2,7 +2,7 @@ package io.github.whdt.db.mappingEntities
 
 import org.jetbrains.exposed.v1.core.Table
 
-object InterfaceTable : Table("interface") {
+object InterfaceTable : Table("hdt.interface") {
     val id = integer("id").autoIncrement()
     val name = varchar("name", 100)
     val ipaddress = varchar("ipaddress", 15)
