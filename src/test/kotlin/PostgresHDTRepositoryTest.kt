@@ -1,3 +1,4 @@
+import io.github.whdt.db.configureDatabaseSchema
 import io.github.whdt.db.repository.PostgresHDTRepository
 import io.github.whdt.db.configureDatabases
 import io.github.whdt.db.entities.*
@@ -16,6 +17,7 @@ class PostgresHDTRepositoryTest : FunSpec({
     beforeSpec {
         testApplication {
             application {
+                configureDatabaseSchema()
                 configureDatabases()
             }
         }

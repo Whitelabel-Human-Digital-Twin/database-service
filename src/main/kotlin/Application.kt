@@ -2,6 +2,7 @@ package io.github.whdt
 
 import configureDatabaseWorker
 import configureRouting
+import io.github.whdt.db.configureDatabaseSchema
 import io.github.whdt.db.configureDatabases
 import model.DomainCommand
 import io.ktor.server.application.*
@@ -16,6 +17,7 @@ fun Application.module() {
 
     configureHTTP()
     configureSerialization()
+    configureDatabaseSchema()
     configureDatabases()
     configureRouting(commandChannel)
     configureMqttListener(commandChannel)
