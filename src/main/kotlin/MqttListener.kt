@@ -6,6 +6,7 @@ import io.github.whdt.core.hdt.model.property.Property
 import io.github.whdt.distributed.message.Message
 import io.github.whdt.distributed.namespace.Namespace
 import io.ktor.server.application.*
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.serialization.json.Json
@@ -73,10 +74,12 @@ fun mapToDomainCommand(
         topic.endsWith(Namespace.PROPERTY_UPDATE_REQUEST_POSTFIX_MQTT) -> {
             val prop = message.unwrap<Property>().getOrNull()
             if (prop != null) {
+                val reply = CompletableDeferred(Unit)
                 InsertProperty(
                     hdt = message.hdt,
                     property = prop,
                     receivedAt = receivedAt,
+                    reply = reply,
                 )
             } else {
                 NotifyFailureCommand("Can't read property for topic $topic")
