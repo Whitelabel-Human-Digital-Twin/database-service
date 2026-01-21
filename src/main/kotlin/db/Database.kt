@@ -5,9 +5,9 @@ import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
 
 fun Application.configureDatabases() {
     R2dbcDatabase.connect(
-        url = "r2dbc:postgresql://localhost:5432/HumanDigitalTwin",
+        url = "${System.getenv("DATABASE_URL_BASE")}/${System.getenv("DATABASE_NAME")}",
         driver = "postgresql",
-        user = "postgres",
-        password = "Macca03"
+        user = System.getenv("DATABASE_USERNAME"),
+        password = System.getenv("DATABASE_PASSWORD")
     )
 }
