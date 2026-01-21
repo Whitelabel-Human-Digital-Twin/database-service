@@ -3,6 +3,7 @@ import io.github.whdt.db.repository.PostgresHDTRepository
 import io.github.whdt.db.configureDatabases
 import io.github.whdt.db.entities.*
 import io.github.whdt.db.relations.*
+import io.kotest.common.runBlocking
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
@@ -17,8 +18,8 @@ class PostgresHDTRepositoryTest : FunSpec({
     beforeSpec {
         testApplication {
             application {
-                configureDatabaseSchema()
                 configureDatabases()
+                runBlocking { configureDatabaseSchema() }
             }
         }
         repository = PostgresHDTRepository()
@@ -226,7 +227,7 @@ class PostgresHDTRepositoryTest : FunSpec({
         val testTimeGreater = LocalDateTime(2017,10,15,0,0,0)
         val id_detTime = repository.detTime(testTimeLess, testTimeGreater)
         id_detTime.shouldNotBeEmpty()
-        id_detTime.forEach { it -> println("${it}" ) }
+        id_detTime.forEach { println("$it" ) }
         val valu = repository.valueOfTime(testTimeLess, testTimeGreater)
         valu.shouldNotBeEmpty()
         valu.forEach { value -> println("valore: ${value.component1()}, ${value.component2()}, ${value.component3()}, ${value.component4()}") }

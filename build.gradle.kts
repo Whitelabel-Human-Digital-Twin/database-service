@@ -47,7 +47,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("com.hivemq:hivemq-mqtt-client:1.3.0")
-
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 
     implementation("io.github.whdt:whdt-core:0.3.0")
     implementation("io.github.whdt:whdt-distributed:0.1.0")
