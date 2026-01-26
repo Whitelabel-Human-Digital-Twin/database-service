@@ -16,7 +16,7 @@ import model.NotifyFailureCommand
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
-
+/*
 fun Application.configureMqttListener(commands: Channel<DomainCommand>) {
     val mqttClient = MqttClient.builder()
         .useMqttVersion5()
@@ -88,3 +88,4 @@ fun mapToDomainCommand(
         else -> error("Unknown topic: $topic")
     }
 }
+*/

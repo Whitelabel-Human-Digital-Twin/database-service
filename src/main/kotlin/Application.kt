@@ -22,7 +22,7 @@ fun Application.module() {
     configureDatabases()
     launch { configureDatabaseSchema() }
     configureRouting(commandChannel)
-    configureMqttListener(commandChannel)
+    //configureMqttListener(commandChannel)
     configureDatabaseWorker(commandChannel)
 }
 
