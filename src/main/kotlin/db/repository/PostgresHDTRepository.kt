@@ -157,12 +157,14 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addHDT(hdt: HumanDigitalTwin): Unit  = suspendTransaction {
         HumanDigitalTwinTable.insert {
+            it[HumanDigitalTwinTable.id]= hdt.id
             it[HumanDigitalTwinTable.name] = hdt.name
         }
     }
 
     override suspend fun addInterface(int: Interface): Unit  = suspendTransaction {
         InterfaceTable.insert{
+            it[InterfaceTable.id] = int.id
             it[InterfaceTable.name] = int.name
             it[InterfaceTable.ipaddress] = int.ipaddress
             it[InterfaceTable.port] = int.port
@@ -173,6 +175,7 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addProperty(prop: Property): Unit  = suspendTransaction {
         PropertyTable.insert {
+            it[PropertyTable.id] = prop.id
             it[PropertyTable.name] = prop.name
             it[PropertyTable.description] = prop.description
         }
@@ -180,6 +183,7 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addTime(time: Time): Unit  = suspendTransaction {
         TimeTable.insert {
+            it[TimeTable.id] = time.id
             it[TimeTable.dateenter] = time.dateenter
             it[TimeTable.datestart] = time.datestart
             it[TimeTable.dateend] = time.dateend
@@ -188,6 +192,7 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addValue(valu: Value): Unit  = suspendTransaction {
         ValueTable.insert {
+            it[ValueTable.id] = valu.id
             it[ValueTable.name] = valu.name
             it[ValueTable.value] = valu.value
             it[ValueTable.type] = valu.type
@@ -196,7 +201,7 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addAssociated(associated: Associated): Unit  = suspendTransaction {
         AssociatedTable.insert {
-            it[AssociatedTable.id] = associated.id
+            //it[AssociatedTable.id] = associated.id
             it[AssociatedTable.property_id] = associated.property_id
             it[AssociatedTable.interface_id] = associated.interface_id
         }
@@ -204,7 +209,7 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addDefines(defines: Defines): Unit  = suspendTransaction {
        DefinesTable.insert {
-           it[DefinesTable.id] = defines.id
+           //it[DefinesTable.id] = defines.id
            it[DefinesTable.property_id] = defines.property_id
            it[DefinesTable.value_id] = defines.value_id
        }
@@ -212,7 +217,7 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addImplements(implements: Implements): Unit  = suspendTransaction {
         ImplementsTable.insert {
-            it[ImplementsTable.id] = implements.id
+            //it[ImplementsTable.id] = implements.id
             it[ImplementsTable.property_id] = implements.property_id
             it[ImplementsTable.humandigitaltwin_id] = implements.humandigitaltwin_id
         }
@@ -220,7 +225,7 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addInteracts(interacts: Interacts): Unit  = suspendTransaction {
         InteractsTable.insert {
-            it[InteractsTable.id] = interacts.id
+            //it[InteractsTable.id] = interacts.id
             it[InteractsTable.humandigitaltwin_id] = interacts.humandigitaltwin_id
             it[InteractsTable.interface_id] = interacts.interface_id
         }
@@ -228,15 +233,15 @@ class PostgresHDTRepository : HDTRepository {
 
     override suspend fun addSampling(sampling: Sampling): Unit  = suspendTransaction {
         SamplingTable.insert {
-            it[SamplingTable.id] = sampling.id
+            //it[SamplingTable.id] = sampling.id
             it[SamplingTable.time_id] = sampling.time_id
             it[SamplingTable.value_id] = sampling.value_id
         }
     }
-
+    // restituisce gli id tutti i tempi nel range -- funzione di supporto
     override suspend fun detTime(
-        timeLess : LocalDateTime
-        ,timeGreter : LocalDateTime
+        timeLess : LocalDateTime,
+        timeGreter : LocalDateTime
     ): List<Int> = suspendTransaction {
         TimeTable
             .selectAll()
@@ -249,35 +254,60 @@ class PostgresHDTRepository : HDTRepository {
             }
             .toList()
     }
-    /* farne una per proprietà e una per dt */
+
+    // restituisce i valori in un determinato tempo
     override suspend fun valueOfTime(
         timeLess : LocalDateTime,
         timeGreter : LocalDateTime
-    ): List<Value> {
+    ): List<Value>?  = suspendTransaction{
         val timeId = detTime(timeLess, timeGreter)
-        val rel = allSampling().filter{timeId.contains(it.component2())}.map{it.value_id}
-        return allValue().filter{rel.contains(it.component1())}
+        if(timeId.isNotEmpty()){
+            println("ciao")
+            val rel = allSampling().filter{timeId.contains(it.time_id)}.map{it.value_id}
+            val result = allValue().filter{rel.contains(it.id)}
+            if(result.isNotEmpty()) {
+                result
+            }else null
+        }else null
     }
 
-    override suspend fun valueOfTimeOfProp(
+    // restituisce i valori di una proprietà in un determinato tempo di un determinato dt
+    override suspend fun valueOfTimeOfPropOfDt(
+        hdtName : String,
         propName : String,
         timeLess : LocalDateTime,
         timeGreter : LocalDateTime
-    ): List<Value> {
-        val valOfTime = valueOfTime(timeLess, timeGreter)
-        val propId = detProperty(propName)
-        return valOfTime.filter { propId.contains(it.component1()) }
+    ): List<Value>?  = suspendTransaction{
+        val tmp = valueOfTimeOfDt(hdtName,timeLess,timeGreter)
+        val idProp = detProperty(propName)
+        if(tmp != null && idProp.isNotEmpty()){
+            val rel = allImplements().filter {idProp.contains(it.property_id)}
+            val idHdt = allHDT().filter { it.name == hdtName }.map { it.id }.firstOrNull()
+            val resultId = rel.filter { it.humandigitaltwin_id == idHdt }.map { it.property_id }.firstOrNull()
+            if(resultId != null){
+                tmp[resultId]
+            }else null
+        }else null
     }
 
+    // restituisce i valori di tutte le proprietà di un dt in un determinato tempo
     override suspend fun valueOfTimeOfDt(
         hdtName : String,
         timeLess : LocalDateTime,
         timeGreter : LocalDateTime
-    ): List<Value> {
-        val idHdt = allHDT().filter { it.component2() == hdtName }.map{ it.id }.first()
-        val idProperty = allImplements().filter { it.humandigitaltwin_id == idHdt }.map{it.property_id}
-        val idValue = allDefines().filter { idProperty.contains(it.property_id) }.map { it.value_id }
-        return valueOfTime(timeLess,timeGreter).filter{idValue.contains(it.component1())}
+    ): Map<Int,List<Value>>?  = suspendTransaction{
+        val idHdt = allHDT().filter { it.name == hdtName }
+                            .map{ it.id }.firstOrNull()
+        if(idHdt != null) {
+            val result: MutableMap<Int, List<Value>> = mutableMapOf()
+            val idProperty = allImplements().filter { it.humandigitaltwin_id == idHdt }.map{it.property_id}
+            idProperty.forEach { id ->
+                val idValue = allDefines().filter {it.property_id == id}.map{it.value_id}
+                result[id] = allValue().filter {idValue.contains(it.id)}
+            }
+            result
+        }else null
+
     }
 
     override suspend fun detProperty(propertyName: String): List<Int> = suspendTransaction{
@@ -312,69 +342,117 @@ class PostgresHDTRepository : HDTRepository {
         }
     }
 
-    override suspend fun minPropertyOfTime(
+    //restituisci i valore minimo di una proprietà di un dt
+    override suspend fun minPropertyOfTimeHdt(
+        hdt : String,
         propertyName: String,
         timeLess: LocalDateTime,
         timeGreter: LocalDateTime
-    ): Value? {
+    ): Value?  = suspendTransaction{
         val valu = valueOfTime(timeLess, timeGreter)
-        val idValue = allDefines().filter{ it.property_id == detProperty(propertyName).first()}.map{it.value_id}
-        return valu.filter{idValue.contains(it.component1())}.minWithOrNull { a, b ->
-            val valA = parsePrimitive(a.component3(),a.component4()) as? Number
-            val valB = parsePrimitive(b.component3(),b.component4()) as? Number
-            compareValues(valA?.toDouble(), valB?.toDouble())
-        }
+        val allProp = allPropOfDt(hdt)
+        if (allProp != null && valu != null ) {
+            val idProp = allProp.filter{it.name == propertyName}.map{it.id}.firstOrNull()
+            if(idProp != null) {
+                val idValue = allDefines().filter{ it.property_id == idProp}.map{it.value_id}
+                valu.filter{idValue.contains(it.id)}.minWithOrNull{ a, b ->
+                    val valA = parsePrimitive(a.value,a.type) as? Number
+                    val valB = parsePrimitive(b.value,b.type) as? Number
+                    compareValues(valA?.toDouble(), valB?.toDouble())
+                }
+            }else null
+        } else null
     }
 
-    override suspend fun maxPropertyOfTime(
+    //restituisci i valore massimo di una proprietà di un dt
+    override suspend fun maxPropertyOfTimeHdt(
+        hdt : String,
         propertyName: String,
         timeLess: LocalDateTime,
         timeGreter: LocalDateTime
-    ): Value? {
+    ): Value?  = suspendTransaction{
         val valu = valueOfTime(timeLess, timeGreter)
-        val idValue = allDefines().filter{ it.property_id == detProperty(propertyName).first()}.map{it.value_id}
-        return valu.filter{idValue.contains(it.component1())}.maxWithOrNull{ a, b ->
-            val valA = parsePrimitive(a.component3(),a.component4()) as? Number
-            val valB = parsePrimitive(b.component3(),b.component4()) as? Number
-            compareValues(valA?.toDouble(), valB?.toDouble())
-        }
+        val allProp = allPropOfDt(hdt)
+        if (allProp != null && valu != null ) {
+            val idProp = allProp.filter{it.name == propertyName}.map{it.id}.firstOrNull()
+            if(idProp != null) {
+                val idValue = allDefines().filter{ it.property_id == idProp}.map{it.value_id}
+                valu.filter{idValue.contains(it.id)}.maxWithOrNull{ a, b ->
+                    val valA = parsePrimitive(a.value,a.type) as? Number
+                    val valB = parsePrimitive(b.value,b.type) as? Number
+                    compareValues(valA?.toDouble(), valB?.toDouble())
+                }
+            }else null
+        } else null
     }
+
+    //
     override suspend fun avgPropertyOfTime(
+        hdt : String,
         propertyName: String,
         timeLess: LocalDateTime,
         timeGreter: LocalDateTime
-    ): Double {
+    ): Double?  = suspendTransaction{
         val valu = valueOfTime(timeLess, timeGreter)
-        val idValue = allDefines().filter{ it.property_id == detProperty(propertyName).first()}.map{it.value_id}
-        return valu.filter{idValue.contains(it.component1())}
-                   .map{parsePrimitive(it.component3(),it.component4())}
-                   .filterIsInstance<Number>()
-                   .map{ it.toDouble() }
-                   .average()
+        val allProp = allPropOfDt(hdt)
+        if (allProp != null && valu != null ) {
+            val idProp = allProp.filter{it.name == propertyName}.map{it.id}.firstOrNull()
+            if(idProp != null) {
+                val idValue = allDefines().filter{ it.property_id == idProp}.map{it.value_id}
+                val valueTmp = valu.filter{idValue.contains(it.id)}
+                if(valueTmp.isNotEmpty()){
+                    valueTmp.map{parsePrimitive(it.value,it.type)}
+                        .filterIsInstance<Number>()
+                        .map{ it.toDouble() }
+                        .average()
+                }else null
+            }else null
+        } else null
     }
 
+    // restituisce i valori in un determinato range
     override suspend fun valueInRange(
         minValue: String,
         maxValue: String
-    ): List<Value> {
-        return allValue().filter {
+    ): List<Value>? = suspendTransaction{
+        val valRange = allValue().filter {
             val data = (parsePrimitive(it.component3(), it.component4()) as? Number)?.toDouble()
             val min = (parsePrimitive(minValue, it.component4()) as? Number)?.toDouble()
             val max = (parsePrimitive(maxValue, it.component4()) as? Number)?.toDouble()
             data != null && min != null && max != null && data >= min && data <= max
         }
+        valRange.ifEmpty { null }
     }
 
+    //restituisce i dt che hanno una proprietà in un determinato range
     override suspend fun dtPropertyRange(
         propertyName: String,
         minValue: String,
         maxValue: String
-    ): List<HumanDigitalTwin> {
-        val rangeValue = valueInRange(minValue, maxValue).map { it.id }
-        val idPropValu = allDefines().filter { rangeValue.contains(it.value_id) }.map{it.property_id}
-        val idProperty = detProperty(propertyName).filter { idPropValu.contains(it)}
-        val idHdt = allImplements().filter { idProperty.contains(it.property_id)}.map{it.component3()}
-        return allHDT().filter { idHdt.contains(it.id) }
+    ): List<HumanDigitalTwin>? = suspendTransaction{
+        val rangeValue = valueInRange(minValue, maxValue)
+        val prop = detProperty(propertyName)
+        if (rangeValue != null && prop.isNotEmpty() ) {
+            val idPropValu = allDefines().filter { rel -> rangeValue.map{it.id}.contains(rel.value_id)}.map{it.property_id}
+            val idProperty = prop.filter{ idPropValu.contains(it)}
+            if(idPropValu.isNotEmpty()){
+                val idHdt = allImplements().filter{ idProperty.contains(it.property_id)}.map{it.humandigitaltwin_id}
+                allHDT().filter { idHdt.contains(it.id) }
+            }else null
+        }else null
+
+    }
+
+    // restituisce tutte le proprietà di un hdt
+    override suspend fun allPropOfDt(
+        hdtName : String
+    ): List<Property>? = suspendTransaction{
+        val idHdt = allHDT().firstOrNull{ it.name == hdtName }
+        if(idHdt != null){
+            val idProp = allImplements().filter { it.humandigitaltwin_id == idHdt.id }.map{it.property_id}
+            val result = allProperty().filter{ idProp.contains(it.id) }
+            result
+        }else null
     }
 
 

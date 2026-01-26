@@ -10,6 +10,7 @@ import io.kotest.matchers.shouldBe
 import io.ktor.server.testing.testApplication
 import kotlin.random.Random
 import kotlinx.datetime.*
+import org.junit.jupiter.api.fail
 
 class PostgresHDTRepositoryTest : FunSpec({
 
@@ -27,7 +28,12 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test HumanDigitalTwinTable ") {
         val testName = "HDT_${Random.nextInt(100001)}"
-        val newHDT = HumanDigitalTwin(name = testName)
+        val hdt = repository.allHDT().lastOrNull()
+        var id = 0
+        if (hdt != null) {
+            id = hdt.id + 1
+        }
+        val newHDT = HumanDigitalTwin(id = id ,name = testName)
         repository.addHDT(newHDT)
 
         val allHDTs = repository.allHDT()
@@ -39,7 +45,12 @@ class PostgresHDTRepositoryTest : FunSpec({
     test("Test InterfaceTable ") {
         val testName = "Interface_${Random.nextInt(100001)}"
         val randIp = "${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}"
-        val newInterface = Interface(name = testName, ipaddress = randIp , port = 5 , clientid = "prova", type = "HTTP" )
+        val int = repository.allInterface().lastOrNull()
+        var id = 0
+        if (int != null) {
+            id = int.id + 1
+        }
+        val newInterface = Interface(id = id,name = testName, ipaddress = randIp , port = 5 , clientid = "prova", type = "HTTP" )
         repository.addInterface(newInterface)
 
         val allInterface = repository.allInterface()
@@ -50,7 +61,12 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test Property ") {
         val testName = "Property_${Random.nextInt(100001)}"
-        val newProperty = Property(name = testName, description = "Test description")
+        val prop = repository.allProperty().lastOrNull()
+        var id = 0
+        if (prop != null) {
+            id = prop.id + 1
+        }
+        val newProperty = Property(id = id,name = testName, description = "Test description")
         repository.addProperty(newProperty)
 
         val allProperty = repository.allProperty()
@@ -68,7 +84,12 @@ class PostgresHDTRepositoryTest : FunSpec({
             Random.nextInt(0, 60),
             Random.nextInt(0, 60)
         )
-        val newTime = Time( dateenter = testTime)
+        val time = repository.allTime().lastOrNull()
+        var id = 0
+        if (time != null) {
+            id = time.id + 1
+        }
+        val newTime = Time(id = id, dateenter = testTime)
         repository.addTime(newTime)
 
         val allTime = repository.allTime()
@@ -94,7 +115,12 @@ class PostgresHDTRepositoryTest : FunSpec({
             Random.nextInt(0, 60),
             Random.nextInt(0, 60)
         )
-        val newTime = Time( datestart = testTime1, dateend = testTime2)
+        val time = repository.allTime().lastOrNull()
+        var id = 0
+        if (time != null) {
+            id = time.id + 1
+        }
+        val newTime = Time(id = id, datestart = testTime1, dateend = testTime2)
         repository.addTime(newTime)
 
         val allTime = repository.allTime()
@@ -106,7 +132,12 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test Value ") {
         val testName = "Value_${Random.nextInt(100001)}"
-        val newValue = Value(name = testName, value = "${Random.nextInt(100001)}", type = "Int" )
+        val valu = repository.allValue().lastOrNull()
+        var id = 0
+        if (valu != null) {
+            id = valu.id + 1
+        }
+        val newValue = Value(id = id,name = testName, value = "${Random.nextInt(100001)}", type = "Int" )
         repository.addValue(newValue)
 
         val allValue = repository.allValue()
@@ -117,13 +148,23 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test Associated ") {
         val testName1 = "Property_${Random.nextInt(100001)}"
-        val newProperty = Property(name = testName1, description = "Test description")
+        val prop = repository.allProperty().lastOrNull()
+        var id = 0
+        if (prop != null) {
+            id = prop.id + 1
+        }
+        val newProperty = Property(id = id,name = testName1, description = "Test description")
         repository.addProperty(newProperty)
         val testid1 = repository.allProperty().last().component1()
 
         val testName2 = "Interface_${Random.nextInt(100001)}"
         val randIp = "${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}"
-        val newInterface = Interface(name = testName2, ipaddress = randIp, port = 5 , clientid = "prova", type = "HTTP" )
+        val int = repository.allInterface().lastOrNull()
+        var id2 = 0
+        if (int != null) {
+            id2 = int.id + 1
+        }
+        val newInterface = Interface(id =id2,name = testName2, ipaddress = randIp, port = 5 , clientid = "prova", type = "HTTP" )
         repository.addInterface(newInterface)
         val testid2 = repository.allInterface().last().component1()
 
@@ -138,12 +179,22 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test Defines ") {
         val testName1 = "Property_${Random.nextInt(100001)}"
-        val newProperty = Property(name = testName1, description = "Test description")
+        val prop = repository.allProperty().lastOrNull()
+        var id = 0
+        if (prop != null) {
+            id = prop.id + 1
+        }
+        val newProperty = Property(id = id,name = testName1, description = "Test description")
         repository.addProperty(newProperty)
         val testid1 = repository.allProperty().last().component1()
 
         val testName2 = "Value_${Random.nextInt(100001)}"
-        val newValue = Value(name = testName2, value = "10", type = "Int" )
+        val valu = repository.allValue().lastOrNull()
+        var id2 = 0
+        if (valu != null) {
+            id2 = valu.id + 1
+        }
+        val newValue = Value(id = id2,name = testName2, value = "10", type = "Int" )
         repository.addValue(newValue)
         val testid2 = repository.allValue().last().component1()
         val newDefines = Defines(id = Random.nextInt(100001), property_id = testid1, value_id = testid2)
@@ -157,12 +208,22 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test Implements ") {
         val testName1 = "Property_${Random.nextInt(100001)}"
-        val newProperty = Property(name = testName1, description = "Test description")
+        val prop = repository.allProperty().lastOrNull()
+        var id = 0
+        if (prop != null) {
+            id = prop.id + 1
+        }
+        val newProperty = Property(id = id,name = testName1, description = "Test description")
         repository.addProperty(newProperty)
         val testid1 = repository.allProperty().last().component1()
 
         val testName2 = "HDT_${Random.nextInt(100001)}"
-        val newHDT = HumanDigitalTwin(name = testName2)
+        val hdt = repository.allHDT().lastOrNull()
+        var id2 = 0
+        if (hdt != null) {
+            id2 = hdt.id + 1
+        }
+        val newHDT = HumanDigitalTwin(id=id2,name = testName2)
         repository.addHDT(newHDT)
         val testid2 = repository.allHDT().last().component1()
 
@@ -177,13 +238,23 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test Interacts ") {
         val testName1 = "HDT_${Random.nextInt(100001)}"
-        val newHDT = HumanDigitalTwin(name = testName1)
+        val hdt = repository.allHDT().lastOrNull()
+        var id = 0
+        if (hdt != null) {
+            id = hdt.id + 1
+        }
+        val newHDT = HumanDigitalTwin(id=id,name = testName1)
         repository.addHDT(newHDT)
         val testid1 = repository.allHDT().last().component1()
 
         val testName2 = "Interface_${Random.nextInt(100001)}"
         val randIp = "${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}.${Random.nextInt(256)}"
-        val newInterface = Interface(name = testName2, ipaddress = randIp, port = 5 , clientid = "prova", type = "HTTP" )
+        val int = repository.allInterface().lastOrNull()
+        var id2 = 0
+        if (int != null) {
+            id2 = int.id + 1
+        }
+        val newInterface = Interface(id= id2,name = testName2, ipaddress = randIp, port = 5 , clientid = "prova", type = "HTTP" )
         repository.addInterface(newInterface)
         val testid2 = repository.allInterface().last().component1()
 
@@ -205,12 +276,22 @@ class PostgresHDTRepositoryTest : FunSpec({
             Random.nextInt(0, 60),
             Random.nextInt(0, 60)
         )
-        val newTime = Time(dateenter = testTime)
+        val time = repository.allTime().lastOrNull()
+        var id = 0
+        if (time != null) {
+            id = time.id + 1
+        }
+        val newTime = Time(id = id,dateenter = testTime)
         repository.addTime(newTime)
         val testid1 = repository.allTime().last().component1()
 
         val testName = "Value_${Random.nextInt(100001)}"
-        val newValue = Value(name = testName, value = "${Random.nextInt(100001)}", type = "Int")
+        val valu = repository.allValue().lastOrNull()
+        var id2 = 0
+        if (valu != null) {
+            id2 = valu.id + 1
+        }
+        val newValue = Value(id = id2,name = testName, value = "${Random.nextInt(100001)}", type = "Int")
         repository.addValue(newValue)
         val testid2 = repository.allValue().last().component1()
 
@@ -224,55 +305,111 @@ class PostgresHDTRepositoryTest : FunSpec({
 
     test("Test search value by time ") {
         val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
-        val testTimeGreater = LocalDateTime(2017,10,15,0,0,0)
+        val testTimeGreater = LocalDateTime(2030,10,15,0,0,0)
         val id_detTime = repository.detTime(testTimeLess, testTimeGreater)
         id_detTime.shouldNotBeEmpty()
         id_detTime.forEach { println("$it" ) }
         val valu = repository.valueOfTime(testTimeLess, testTimeGreater)
-        valu.shouldNotBeEmpty()
-        valu.forEach { value -> println("valore: ${value.component1()}, ${value.component2()}, ${value.component3()}, ${value.component4()}") }
+        if(valu != null) {
+            valu.shouldNotBeEmpty()
+            valu.forEach { value -> println("valore: ${value.component1()}, ${value.component2()}, ${value.component3()}, ${value.component4()}") }
+        }else fail("errore")
     }
 
     test("Test search min value of property by time ") {
         val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
         val testTimeGreater = LocalDateTime(2029,10,15,0,0,0)
-        val nameProp = "Property_25566"
-        val valu = repository.minPropertyOfTime(nameProp,testTimeLess,testTimeGreater)
-        println("il valore più basso è $valu")
+        val nameProp = "Battito_Cardiaco"
+        val valu = repository.minPropertyOfTimeHdt("Mario_Rossi",nameProp,testTimeLess,testTimeGreater)
+        if(valu != null) {
+            println("il valore più basso è $valu")
+        }else fail("errore")
+
     }
 
     test("Test search max value of property by time ") {
         val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
         val testTimeGreater = LocalDateTime(2029,10,15,0,0,0)
-        val nameProp = "Property_25566"
-        val valu = repository.maxPropertyOfTime(nameProp,testTimeLess,testTimeGreater)
-        println("il valore più alto è $valu")
+        val nameProp = "Battito_Cardiaco"
+        val valu = repository.maxPropertyOfTimeHdt("Mario_Rossi",nameProp,testTimeLess,testTimeGreater)
+        if(valu != null) {
+            println("il valore più alto è $valu")
+        }else fail("errore")
+
+    }
+
+    test("Test search avg value of property by time ") {
+        val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
+        val testTimeGreater = LocalDateTime(2029,10,15,0,0,0)
+        val nameProp = "Battito_Cardiaco"
+        val valu = repository.avgPropertyOfTime("Mario_Rossi",nameProp,testTimeLess,testTimeGreater)
+        if(valu != null) {
+            println("il valore più alto è $valu")
+        }else fail("errore")
+
+    }
+
+    test("Test search property in  time ") {
+        val testTimeLess = LocalDateTime(2000,10,15,0,0,0)
+        val testTimeGreater = LocalDateTime(2025,12,27,15,40,0)
+        print("va?22?")
+        val valu = repository.valueOfTime(testTimeLess,testTimeGreater)
+        print("va??")
+        valu?.forEach { println("il valore : $it")  }
+        if(valu != null) {
+            valu.forEach { println("il valore : $it")  }
+        }else fail("errore")
 
     }
 
     test("Test search dt "){
         val testName1 = "Property_${Random.nextInt(100001)}"
-        val newProperty1 = Property(name = testName1, description = "Test description")
+        val prop1 = repository.allProperty().lastOrNull()
+        var id = 0
+        if (prop1 != null) {
+            id = prop1.id + 1
+        }
+        val newProperty1 = Property(id= id,name = testName1, description = "Test description")
         repository.addProperty(newProperty1)
         val testid1 = repository.allProperty().last().component1()
 
         val testName2 = "Value_${Random.nextInt(100001)}"
-        val newValue1 = Value(name = testName2, value = "${Random.nextInt(50,100)}", type = "Int" )
+        val valu1 = repository.allValue().lastOrNull()
+        var id2 = 0
+        if (valu1 != null) {
+            id2 = valu1.id + 1
+        }
+        val newValue1 = Value(id = id2,name = testName2, value = "${Random.nextInt(50,100)}", type = "Int" )
         repository.addValue(newValue1)
         val testid2 = repository.allValue().last().component1()
 
         val testName3 = "HDT_${Random.nextInt(100001)}"
-        val newHDT = HumanDigitalTwin(name = testName3)
+        val hdt = repository.allHDT().lastOrNull()
+        var id3 = 0
+        if (hdt != null) {
+            id3 = hdt.id + 1
+        }
+        val newHDT = HumanDigitalTwin(id= id3,name = testName3)
         repository.addHDT(newHDT)
         val testid3 = repository.allHDT().last().component1()
 
         val testName4 = "Property_${Random.nextInt(100001)}"
-        val newProperty2 = Property(name = testName4, description = "Test description")
+        val prop2 = repository.allProperty().lastOrNull()
+        var id4 = 0
+        if (prop2 != null) {
+            id4 = prop2.id + 1
+        }
+        val newProperty2 = Property(id= id4,name = testName4, description = "Test description")
         repository.addProperty(newProperty2)
         val testid4 = repository.allProperty().last().component1()
 
         val testName5 = "Value_${Random.nextInt(100001)}"
-        val newValue2 = Value(name = testName5, value = "${Random.nextInt(10,40)}", type = "Int" )
+        val valu2 = repository.allValue().lastOrNull()
+        var id5 = 0
+        if (valu2 != null) {
+            id5 = valu2.id + 1
+        }
+        val newValue2 = Value(id = id5,name = testName5, value = "${Random.nextInt(10,40)}", type = "Int" )
         repository.addValue(newValue2)
         val testid5 = repository.allValue().last().component1()
 
@@ -285,9 +422,10 @@ class PostgresHDTRepositoryTest : FunSpec({
         repository.addDefines(newDefines1)
         repository.addDefines(newDefines2)
         val dt = repository.dtPropertyRange(testName1 ,"50","100")
-
-        dt.shouldNotBeEmpty()
-        dt.forEach { println("nome HDT : ${it.name}" ) }
+        if(dt != null) {
+            dt.shouldNotBeEmpty()
+            dt.forEach { println("nome HDT : ${it.name}") }
+        }else fail("Errore")
 
     }
     
